@@ -2,7 +2,6 @@
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,20 +23,20 @@
 	    <th>Action</th>
 	  </tr>
 	  	<% List<Map<String, Object>> resMap = (List<Map<String,Object>>) request.getAttribute("response"); 
-	  	System.out.println(resMap);
+	  	/* System.out.println(resMap); */
+	  	for(Map<String, Object> map : resMap){
 	  	%>
 	  	<tr>
-	  		<th>${customer.first_name}</th>
-		    <th>Last Name</th>
-		    <th>Address </th>
-		    <th>City</th>
-		    <th>State</th>
-		    <th>Email</th>
-		    <th>Phone</th>
-		    <th>Action</th>
+	  		<td><%= map.get("first_name") %></td>
+		    <td><%= map.get("last_name") %></td>
+		    <td><%= map.get("address") %> </td>
+		    <td><%= map.get("city") %></td>
+		    <td><%= map.get("state") %></td>
+		    <td><%= map.get("email") %></td>
+		    <td><%= map.get("phone") %></td>
+		    <td>Action</td>
 	  	</tr>
+	  	<% } %>
 	</table>
-	
-	<h3>${response}</h3>
 </body>
 </html>
