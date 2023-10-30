@@ -1,11 +1,15 @@
 package com.sunBase.controllers;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,8 +37,7 @@ public class UIController {
 	public String loginStatus(Model model, @RequestParam String loginId, @RequestParam String password) {
 
 		// Set the base URI
-		RestAssured.baseURI = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment_auth.jsp"; // Replace with your
-																									// base URL
+		RestAssured.baseURI = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment_auth.jsp"; 
 
 		// JSON request body
 		String jsonRequestBody = "{\r\n" + "\"login_id\" : \"" + loginId + "\",\r\n" + "\"password\" :\"" + password
@@ -112,9 +115,6 @@ public class UIController {
 		Response response = RestAssured.given().queryParam("cmd", "create").body(requestBody)
 				.headers("Authorization", "Bearer " + token).contentType(ContentType.JSON).when().post();
 
-		String res = response.getBody().asString();
-//		String resp = response.getBody().asString();
-//		System.err.println(response.getBody().asString());
 		if (response.getStatusCode() == 201) {
 
 			model.addAttribute("response",response.getBody().asString());
@@ -124,5 +124,23 @@ public class UIController {
 		}
 		
 		return "add_customer";
+	}
+	
+	@DeleteMapping("/delete_customer")
+	public ResponseEntity<String> deleteCustomer(@RequestParam String uuid){
+		
+		RestAssured.baseURI = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp";
+
+		Map<String, String> paramMap = new HashMap<>();
+		paramMap.put("cmd","delete");
+		paramMap.put("uuid", uuid);
+		Response response = RestAssured.given().queryParam("cmd", "delete").queryParam("uuid", uuid)
+				.headers("Authorization", "Bearer " + token).contentType(ContentType.JSON).when().post();
+		if(response.getStatusCode() == 200)
+			return new ResponseEntity<String>(response.getBody().asString(), HttpStatus.OK);
+		else if(response.getStatusCode()==500)
+			return new ResponseEntity<String>(response.getBody().asString(), HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<String>(response.getBody().asString(), HttpStatus.NOT_FOUND);
 	}
 }

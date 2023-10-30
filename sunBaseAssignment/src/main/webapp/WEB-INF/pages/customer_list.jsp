@@ -74,7 +74,7 @@
 		    <td><%= map.get("state") %></td>
 		    <td><%= map.get("email") %></td>
 		    <td><%= map.get("phone") %></td>
-		    <td><i class="fa-solid fa-trash" id="openDelModalButton"></i> <i class="fa-regular fa-pen-to-square" id="openUpdateModalButton"></i></td>
+		    <td><i class="fa-solid fa-trash" class="openDelModalButton" onclick="openDelModal('<%= map.get("uuid") %>')"></i> <i class="fa-regular fa-pen-to-square" class="openUpdateModalButton" onclick="openUpdateModal('<%= map.get("uuid") %>')"></i></td>
 	  	</tr>
 	  	<% } %>
 	</table>
@@ -89,7 +89,8 @@
 	<div id="delModal" class="modal">
 		<div class="modal-content">
 			<span class="close" onclick="closeModal()">&times;</span>
-			<p>Modal content goes here.</p>
+			<h3>Are you sure you want to delete this customer?</h3>
+			<button onclick="delCustomer()">Delete</button>
 		</div>
 	</div>
 	
@@ -99,21 +100,33 @@
 			<p>Modal content goes here.</p>
 		</div>
 	</div>
+	
+	<div id="delSuccessModal" class="modal">
+		<div class="modal-content">
+			<span class="close" onclick="closeDelSuccModal()">&times;</span>
+			<p>Customer deleted successfully!</p>
+			<button onclick="closeDelSuccModal()">Ok</button>
+		</div>
+	</div>
 
 
 	<script type="text/javascript">
 	// Get the modal and open button elements
 	const delModal = document.getElementById("delModal");
 	const updateModal = document.getElementById("updateModal");
-	const openDelModalButton = document.getElementById("openDelModalButton");
-	const openUpdateModalButton = document.getElementById("openUpdateModalButton");
-
-	// Function to open the modal
-	function openDelModal() {
+	const openDelModalButton = document.querySelectorAll(".openDelModalButton");
+	const openUpdateModalButton = document.querySelectorAll(".openUpdateModalButton");
+	const delSuccModal = document.getElementById("delSuccessModal");
+	
+	function openDelModal(uuid_val) {
+	  uuid = uuid_val;
+	  console.log(uuid);
 	  delModal.style.display = "block";
 	}
 	
-	function openUpdateModal() {
+	function openUpdateModal(uuid_val) {
+		uuid = uuid_val;
+		console.log(uuid);
 		  updateModal.style.display = "block";
 		}
 	
@@ -123,16 +136,42 @@
 	  updateModal.style.display = "none";
 	}
 
-	// Event listener to open the modal when the open button is clicked
-	openDelModalButton.addEventListener("click", openDelModal);
-	openUpdateModalButton.addEventListener("click", openUpdateModal);
+	function closeDelSuccModal() {
+		  delSuccModal.style.display = "none";
+		  window.location.reload();
+	}
+	
+	function delCustomer(){
+		const apiUrl = "http://localhost:8092/delete_customer?uuid="+uuid;
+		const requestOptions = {
+		  method: "DELETE",
+		  // Add any necessary headers here, such as authentication headers.
+		};
 
-	// Event listener to close the modal when the close button (×) is clicked
-	modal.querySelector(".close").addEventListener("click", closeModal);
+		fetch(apiUrl, requestOptions)
+		  .then((response) => {
+			  if (!response.ok) {
+			        return response.text().then((text) => {
+			          throw new Error(`Error: ${response} - ${text}`);
+			        });
+			      }
+			      return response; // You can parse the response if needed
+		  })
+		  .then((data) => {
+		    // Handle the success response or the data if needed
+		    console.log("Resource deleted:", data);
+		    delSuccModal.style.display = "block";
+		  })
+		  .catch((error) => {
+		    // Handle errors
+		    console.error("DELETE request failed:", error);
+		  });
+	}
+	
 
 	// Event listener to close the modal when clicking outside of the modal content
 	window.addEventListener("click", (event) => {
-	  if (event.target === delModal) {
+	  if (event.target === delModal || event.target === updateModal) {
 	    closeModal();
 	  }
 	});
