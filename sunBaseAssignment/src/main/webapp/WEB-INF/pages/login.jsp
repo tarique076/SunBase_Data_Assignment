@@ -33,13 +33,39 @@
 </head>
 <body>
 	<div class="container">
-		<form method="post">
-			<h1>Login Page</h1>
-			<input id="loginId" name="loginId" type="text" placeholder="Login Id" required>
-			<input id="password" name="password" type="password" placeholder="Password" required>
-			<h3>${Error}</h3>
-			<input id="button" type="submit" value="Submit">
-		</form>
+		
+		<%  
+		 if( request.getAttribute("statusCode") != null ){ 
+		 	if((int)request.getAttribute("statusCode") != 200){
+		 %>
+		 	<form method="post">
+				<h1>Login Page</h1>
+				<input id="loginId" name="loginId" type="text" placeholder="Login Id" required>
+				<input id="password" name="password" type="password" placeholder="Password" required>
+				<h3>${Error}</h3>
+				<input id="button" type="submit" value="Submit">
+			</form>
+			<% } else { %>
+				<h3>Logged in successfully!</h3>
+				<div>
+					<a href="${baseUrl}/customer_list" style="text-decoration: none">
+						<button>View Customers</button>
+					</a>
+					<a  href="${baseUrl}/add_customer" style="text-decoration: none">
+						<button>Add Customers</button>
+					</a> 
+				</div>
+			<% } %>
+		 <% }else{ %>
+			 <form method="post">			 
+			 	<h1>Login Page</h1>
+				<input id="loginId" name="loginId" type="text" placeholder="Login Id" required>
+				<input id="password" name="password" type="password" placeholder="Password" required>
+				<input id="button" type="submit" value="Submit">
+			 </form>
+		 	
+		 <% } %>
+		
 	</div>
 </body>
 </html>
