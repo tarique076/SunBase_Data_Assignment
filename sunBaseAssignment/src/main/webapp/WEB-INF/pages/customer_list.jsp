@@ -14,7 +14,10 @@
 
 <style>
 body{
-	background-color: #7dcdf5;
+	background-color: #768bfa;
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS',
+		sans-serif;
+	cursor: default;
 }
 .modal {
   display: none;
@@ -52,42 +55,80 @@ body{
   text-align: left;
   background-color: #d7dde0;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 th{
   padding: 10px;
   border-bottom: 2px solid;
-  width:10%;
-  word-break: break-all;
-  overflow-wrap: break-word;
 }
 
 td{
   padding: 10px;
-  width: 10%;
-  word-break: break-all;
-  overflow-wrap: break-word;
+  white-space: nowrap;     /* Prevent text from wrapping */
+  overflow: hidden;        /* Hide any overflowing content */
+  text-overflow: ellipsis;
+}
+
+#head_con{
+	margin: 0px 10px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+#heading{
+	text-align: center;
+}
+
+button {
+	padding: 10px;
+	border: 2px solid #303131;
+	font-weight: bold;
+	cursor: pointer;
+	border-radius: 5%;
+	background-color: #151d47;
+	color: white;
+	cursor: pointer;
+}
+
+.input_flex {
+	display: flex;
+	justify-content: space-around;
+	margin-bottom: 15px;
+	gap: 15px;
+}
+
+input {
+	padding: 8px;
+	font-size: 15px;
+	border-radius: 5px;
+	width: 90%;
+	border: 2px solid black;
+	margin-top: 4px;
 }
 </style>
 <body>
-<h1>Customer List</h1>
-
-<% if( request.getAttribute("statusCode")!=null && (int)request.getAttribute("statusCode")==200){ %>
-	<a href="${baseUrl}/add_customer" style="text-decoration: none">
-		<button>Add Customers</button>
-	</a>
+	<div id="head_con">
+		<h1 id="heading">Customer List</h1>
+		<%
+		if (request.getAttribute("statusCode") != null && (int) request.getAttribute("statusCode") == 200) {
+		%>
+		<a href="${baseUrl}/add_customer" style="text-decoration: none">
+			<button>Add Customers</button>
+		</a>
+	</div>
 	<table id="table_data">
 		<thead>
 			<tr>
-				<th>First Name</th>
-				<th>Last Name</th>
-				<th>Address</th>
-				<th>Street</th>
-				<th>City</th>
-				<th>State</th>
-				<th>Email</th>
-				<th>Phone</th>
-				<th>Action</th>
+				<th style="width: 8%">First Name</th>
+				<th style="width: 8%">Last Name</th>
+				<th style="width: 15%">Address</th>
+				<th style="width: 15%">Street</th>
+				<th style="width: 8%">City</th>
+				<th style="width: 8%">State</th>
+				<th style="width: 15%">Email</th>
+				<th style="width: 8%">Phone</th>
+				<th style="width: 5%">Action</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -97,18 +138,18 @@ td{
 			for (Map<String, Object> map : resMap) {
 			%>
 			<tr>
-				<td><%=map.get("first_name")%></td>
-				<td><%=map.get("last_name")%></td>
-				<td><%=map.get("address")%></td>
-				<td><%=map.get("street")%></td>
-				<td><%=map.get("city")%></td>
-				<td><%=map.get("state")%></td>
-				<td><%=map.get("email")%></td>
-				<td><%=map.get("phone")%></td>
-				<td><i class="fa-solid fa-trash" class="openDelModalButton"
+				<td title="<%=map.get("first_name")%>"><%=map.get("first_name")%></td>
+				<td title="<%=map.get("last_name")%>"><%=map.get("last_name")%></td>
+				<td title="<%=map.get("address")%>"><%=map.get("address")%></td>
+				<td title="<%=map.get("street")%>"><%=map.get("street")%></td>
+				<td title="<%=map.get("city")%>"><%=map.get("city")%></td>
+				<td title="<%=map.get("state")%>"><%=map.get("state")%></td>
+				<td title="<%=map.get("email")%>"><%=map.get("email")%></td>
+				<td title="<%=map.get("phone")%>"><%=map.get("phone")%></td>
+				<td><i title="Delete" style="cursor: pointer;" class="fa-solid fa-trash" class="openDelModalButton"
 					onclick="openDelModal('<%=map.get("uuid")%>')"></i> <i
-					class="fa-regular fa-pen-to-square" class="openUpdateModalButton"
-					onclick="openUpdateModal('<%=map.get("uuid")%>','<%=map.get("first_name")%>','<%=map.get("last_name")%>', '<%=map.get("address")%>', '<%=map.get("city")%>', '<%=map.get("state")%>', '<%=map.get("street")%>','<%=map.get("phone")%>','<%=map.get("email")%>')"></i></td>
+					title="Update" class="fa-regular fa-pen-to-square" class="openUpdateModalButton"
+					style="cursor: pointer;" onclick="openUpdateModal('<%=map.get("uuid")%>','<%=map.get("first_name")%>','<%=map.get("last_name")%>', '<%=map.get("address")%>', '<%=map.get("city")%>', '<%=map.get("state")%>', '<%=map.get("street")%>','<%=map.get("phone")%>','<%=map.get("email")%>')"></i></td>
 			</tr>
 			<%
 			}
@@ -171,8 +212,8 @@ td{
 						placeholder="Enter Email" name="email" id="email" value="">
 				</div>
 				<div class="input_flex_second_item">
-					<label for="phone">Phone</label> <br> <input type="text"
-						placeholder="Enter Phone" name="phone" id="phone" value="">
+					<label for="phone">Phone</label> <br> <input type="number"
+						placeholder="Enter Phone" name="phone" id="phone" maxlength="10" minlength="10" value="">
 				</div>
 			</div>
 			<button id="updateDetails" onclick="updateCustDetails()" >Update</button>

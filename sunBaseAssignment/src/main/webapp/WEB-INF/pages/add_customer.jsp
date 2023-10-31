@@ -5,24 +5,108 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Insert title here</title>
+<style type="text/css">
+body {
+	background-color: #768bfa;
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS',
+		sans-serif;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	margin: 0;
+}
+
+#form_container {
+	background-color: #f5f4ff;
+	max-width: 100%;
+	padding: 20px;
+	border-radius: 10px;
+}
+
+.input_flex {
+	display: flex;
+	justify-content: space-around;
+	margin-bottom: 15px;
+	gap: 15px;
+}
+
+input {
+	padding: 8px;
+	font-size: 15px;
+	border-radius: 5px;
+	width: 90%;
+	border: 2px solid black;
+	margin-top: 4px;
+}
+
+#button, button {
+	width: 40%;
+	margin-left: 25%;
+	background-color: #151d47;
+	color: white;
+	cursor: pointer;
+}
+
+#success_con{
+	width: 30%;
+	display: flex;
+	flex-direction: column;
+	background-color: #f5f4ff;
+	padding: 20px;
+	border-radius: 10px;
+}
+
+#created_success{
+	display: flex;
+	justify-content: flex-start;
+}
+.post_success_button{
+	width: 100%;
+	padding: 8px;
+	font-size: 15px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+}
+#form_head{
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+#back_customers{
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 10%;
+}
+</style>
 </head>
 <body>
-<h1>Add Customer</h1>
 	<%
 	if (request.getAttribute("statusCode") != null && (int) request.getAttribute("statusCode") == 201) {
 	%>
-	<h3>${response}</h3>
-	<div>
-		<a href="${baseUrl}/customer_list" style="text-decoration: none">
-			<button>View Customers</button>
-		</a> <a href="${baseUrl}/add_customer" style="text-decoration: none">
-			<button>Add more Customers</button>
-		</a>
+	<div id="success_con">
+		<h3>${response}</h3>
+		<div id="created_success">
+			<a href="${baseUrl}/customer_list" style="text-decoration: none">
+				<button class="post_success_button">View Customers</button>
+			</a> <a href="${baseUrl}/add_customer" style="text-decoration: none">
+				<button class="post_success_button">Add more Customers</button>
+			</a>
+		</div>
 	</div>
 	<%
 	} else{
 	%>
+	<a href="${baseUrl}/customer_list" style="text-decoration: none">
+		<button class="post_success_button" id="back_customers">View
+			Customers</button>
+	</a>
 	<form method="post">
+	<div id="form_head">
+		<h1>Add Customer</h1>
+	</div>
+	<div id="form_container">
 		<div class="input_flex">
 			<div class="input_flex_first_item">
 				<label for="fname">First Name</label> <br> <input type="text"
@@ -64,6 +148,7 @@
 			</div>
 		</div>
 		<input id="button" type="submit" value="Submit">
+	</div>
 
 	</form>
 	<% } %>
