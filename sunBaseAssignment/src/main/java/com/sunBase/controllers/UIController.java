@@ -1,6 +1,5 @@
 package com.sunBase.controllers;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.restassured.RestAssured;
@@ -26,7 +26,6 @@ public class UIController {
 	private String baseUrl;
 	
 	private String token;
-//	= "dGVzdEBzdW5iYXNlZGF0YS5jb206VGVzdEAxMjM=";
 
 	@GetMapping("/login")
 	public String login() {
@@ -57,7 +56,6 @@ public class UIController {
 			return "login";
 		} else {
 			token = response.getBody().asString();
-			System.out.println(token);
 			model.addAttribute("Error", token);
 			model.addAttribute("statusCode", response.getStatusCode());
 			return "login";
@@ -73,8 +71,6 @@ public class UIController {
 		Response response = RestAssured.given().param("cmd", "get_customer_list")
 				.headers("Authorization", "Bearer " + token).contentType(ContentType.JSON).when().get();
 
-//		String resp = response.getBody().asString();
-//		System.err.println(response.getBody().asString());
 		if (response.getStatusCode() == 200) {
 
 			JsonPath jsonPath = new JsonPath(response.getBody().asString());
@@ -131,9 +127,6 @@ public class UIController {
 		
 		RestAssured.baseURI = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp";
 
-		Map<String, String> paramMap = new HashMap<>();
-		paramMap.put("cmd","delete");
-		paramMap.put("uuid", uuid);
 		Response response = RestAssured.given().queryParam("cmd", "delete").queryParam("uuid", uuid)
 				.headers("Authorization", "Bearer " + token).contentType(ContentType.JSON).when().post();
 		if(response.getStatusCode() == 200)
@@ -142,5 +135,32 @@ public class UIController {
 			return new ResponseEntity<String>(response.getBody().asString(), HttpStatus.INTERNAL_SERVER_ERROR);
 		else
 			return new ResponseEntity<String>(response.getBody().asString(), HttpStatus.NOT_FOUND);
+	}
+	
+	@PutMapping("/update_customer")
+	public ResponseEntity<String> updateCustomer(@RequestParam String uuid, @RequestParam String first_name, @RequestParam String last_name, @RequestParam String address, @RequestParam String city, @RequestParam String state, @RequestParam String street,@RequestParam String phone, @RequestParam String email){
+		
+		RestAssured.baseURI = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp";
+
+		String requestBody = "{\r\n"
+				+ "\"first_name\": \""+first_name+"\",\r\n"
+				+ "\"last_name\": \""+last_name+"\",\r\n"
+				+ "\"street\": \""+street+"\",\r\n"
+				+ "\"address\": \""+address+" \",\r\n"
+				+ "\"city\": \""+city+"\",\r\n"
+				+ "\"state\": \""+state+"\",\r\n"
+				+ "\"email\": \""+email+"\",\r\n"
+				+ "\"phone\": \""+phone+"\"\r\n"
+				+ "}";
+		
+		Response response = RestAssured.given().queryParam("cmd", "update").queryParam("uuid", uuid)
+				.body(requestBody).headers("Authorization", "Bearer " + token).contentType(ContentType.JSON).when().post();
+		
+		if(response.getStatusCode() == 200)
+			return new ResponseEntity<String>(response.getBody().asString(), HttpStatus.OK);
+		else if(response.getStatusCode()==500)
+			return new ResponseEntity<String>(response.getBody().asString(), HttpStatus.NOT_FOUND);
+		else
+			return new ResponseEntity<String>(response.getBody().asString(), HttpStatus.BAD_REQUEST);
 	}
 }
